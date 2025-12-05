@@ -59,8 +59,8 @@ export function Sidebar() {
               <Building2 className="h-6 w-6 text-sidebar-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold text-sidebar-foreground">Bluetarde</h1>
-              <p className="text-xs text-sidebar-foreground/70">Investments Limited</p>
+              <h1 className="text-sm font-semibold text-sidebar-foreground">Wireless Trade</h1>
+              <p className="text-xs text-sidebar-foreground/70">Property Management</p>
             </div>
           </div>
 

@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { TenantDialog } from '@/components/tenants/TenantDialog';
-import { tenants as initialTenants, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
+import { loadTenants, saveTenants, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
 import { Search, Plus, Phone, Mail, Building2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Tenants = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [tenantsList, setTenantsList] = useState<Tenant[]>(initialTenants);
+  const [tenantsList, setTenantsList] = useState<Tenant[]>(() => loadTenants());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
@@ -41,6 +42,8 @@ const Tenants = () => {
   };
 
   const handleSaveTenant = (tenantData: Partial<Tenant>) => {
+    let updatedList: Tenant[];
+    
     if (dialogMode === 'add') {
       const newTenant: Tenant = {
         id: Date.now().toString(),
@@ -56,14 +59,19 @@ const Tenants = () => {
         lastPaymentDate: null,
         moveInDate: new Date().toISOString().split('T')[0],
       };
-      setTenantsList([...tenantsList, newTenant]);
+      updatedList = [...tenantsList, newTenant];
+      toast.success('Tenant added successfully');
     } else if (dialogMode === 'edit' && selectedTenant) {
-      setTenantsList(
-        tenantsList.map((t) =>
-          t.id === selectedTenant.id ? { ...t, ...tenantData } : t
-        )
+      updatedList = tenantsList.map((t) =>
+        t.id === selectedTenant.id ? { ...t, ...tenantData } : t
       );
+      toast.success('Tenant updated successfully');
+    } else {
+      return;
     }
+    
+    setTenantsList(updatedList);
+    saveTenants(updatedList);
   };
 
   return (

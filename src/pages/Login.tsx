@@ -37,7 +37,7 @@ const Login = () => {
             <Building2 className="h-8 w-8 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Bluetarde Investments</CardTitle>
+            <CardTitle className="text-2xl font-bold">Wireless Trade</CardTitle>
             <CardDescription className="text-muted-foreground">
               Sign in to manage your properties
             </CardDescription>
@@ -50,7 +50,7 @@ const Login = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@bluetarde.com"
+                placeholder="admin@wirelesstrade.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
