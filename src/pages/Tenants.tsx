@@ -4,18 +4,67 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
-import { tenants, getApartmentById, formatCurrency } from '@/lib/data';
+import { TenantDialog } from '@/components/tenants/TenantDialog';
+import { tenants as initialTenants, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
 import { Search, Plus, Phone, Mail, Building2 } from 'lucide-react';
 
 const Tenants = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [tenantsList, setTenantsList] = useState<Tenant[]>(initialTenants);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
-  const filteredTenants = tenants.filter(
+  const filteredTenants = tenantsList.filter(
     (tenant) =>
       tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tenant.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tenant.unitNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleAddTenant = () => {
+    setSelectedTenant(null);
+    setDialogMode('add');
+    setDialogOpen(true);
+  };
+
+  const handleEditTenant = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setDialogMode('edit');
+    setDialogOpen(true);
+  };
+
+  const handleViewTenant = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setDialogMode('view');
+    setDialogOpen(true);
+  };
+
+  const handleSaveTenant = (tenantData: Partial<Tenant>) => {
+    if (dialogMode === 'add') {
+      const newTenant: Tenant = {
+        id: Date.now().toString(),
+        name: tenantData.name || '',
+        email: tenantData.email || '',
+        phone: tenantData.phone || '',
+        apartmentId: tenantData.apartmentId || '',
+        unitNumber: tenantData.unitNumber || '',
+        rentAmount: tenantData.rentAmount || 0,
+        amountPaid: tenantData.amountPaid || 0,
+        balance: tenantData.balance || 0,
+        paymentStatus: tenantData.paymentStatus || 'unpaid',
+        lastPaymentDate: null,
+        moveInDate: new Date().toISOString().split('T')[0],
+      };
+      setTenantsList([...tenantsList, newTenant]);
+    } else if (dialogMode === 'edit' && selectedTenant) {
+      setTenantsList(
+        tenantsList.map((t) =>
+          t.id === selectedTenant.id ? { ...t, ...tenantData } : t
+        )
+      );
+    }
+  };
 
   return (
     <Layout>
@@ -26,7 +75,7 @@ const Tenants = () => {
             <h1 className="text-2xl font-bold text-foreground">Tenants</h1>
             <p className="text-muted-foreground">Manage all your tenants</p>
           </div>
-          <Button>
+          <Button onClick={handleAddTenant}>
             <Plus className="h-4 w-4 mr-2" />
             Add Tenant
           </Button>
@@ -97,10 +146,10 @@ const Tenants = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditTenant(tenant)}>
                       Edit
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewTenant(tenant)}>
                       View
                     </Button>
                   </div>
@@ -116,6 +165,14 @@ const Tenants = () => {
           </div>
         )}
       </div>
+
+      <TenantDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        tenant={selectedTenant}
+        mode={dialogMode}
+        onSave={handleSaveTenant}
+      />
     </Layout>
   );
 };

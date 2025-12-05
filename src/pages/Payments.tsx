@@ -11,14 +11,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
-import { tenants, apartments, getApartmentById, formatCurrency, PaymentStatus } from '@/lib/data';
-import { Search, Filter, CheckCircle, Upload } from 'lucide-react';
+import { ReceiptDialog } from '@/components/payments/ReceiptDialog';
+import { tenants, apartments, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
+import { Search, Filter, CheckCircle, FileText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Payments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [apartmentFilter, setApartmentFilter] = useState<string>('all');
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
   const filteredTenants = tenants.filter((tenant) => {
     const matchesSearch =
@@ -34,6 +37,11 @@ const Payments = () => {
       title: 'Payment Recorded',
       description: `${tenantName}'s rent has been marked as paid.`,
     });
+  };
+
+  const handleGenerateReceipt = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setReceiptDialogOpen(true);
   };
 
   return (
@@ -147,8 +155,12 @@ const Payments = () => {
                                 Mark Paid
                               </Button>
                             )}
-                            <Button size="sm" variant="outline">
-                              <Upload className="h-3 w-3 mr-1" />
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleGenerateReceipt(tenant)}
+                            >
+                              <FileText className="h-3 w-3 mr-1" />
                               Receipt
                             </Button>
                           </div>
@@ -168,6 +180,12 @@ const Payments = () => {
           </CardContent>
         </Card>
       </div>
+
+      <ReceiptDialog
+        open={receiptDialogOpen}
+        onOpenChange={setReceiptDialogOpen}
+        tenant={selectedTenant}
+      />
     </Layout>
   );
 };
