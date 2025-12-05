@@ -75,12 +75,12 @@ export const apartments: Apartment[] = [
   },
 ];
 
-export const tenants: Tenant[] = [
+export const initialTenants: Tenant[] = [
   {
     id: '1',
-    name: 'John Adeyemi',
-    email: 'john.adeyemi@email.com',
-    phone: '+234 801 234 5678',
+    name: 'James Mwangi',
+    email: 'james.mwangi@email.com',
+    phone: '+254 712 345 678',
     apartmentId: 'amberview',
     unitNumber: 'A101',
     rentAmount: 250000,
@@ -92,9 +92,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '2',
-    name: 'Sarah Okonkwo',
-    email: 'sarah.okonkwo@email.com',
-    phone: '+234 802 345 6789',
+    name: 'Wanjiku Kamau',
+    email: 'wanjiku.kamau@email.com',
+    phone: '+254 722 456 789',
     apartmentId: 'amberview',
     unitNumber: 'A102',
     rentAmount: 250000,
@@ -106,9 +106,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '3',
-    name: 'Michael Eze',
-    email: 'michael.eze@email.com',
-    phone: '+234 803 456 7890',
+    name: 'Kevin Otieno',
+    email: 'kevin.otieno@email.com',
+    phone: '+254 733 567 890',
     apartmentId: 'grandview',
     unitNumber: 'G201',
     rentAmount: 220000,
@@ -120,9 +120,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '4',
-    name: 'Grace Nnamdi',
-    email: 'grace.nnamdi@email.com',
-    phone: '+234 804 567 8901',
+    name: 'Akinyi Odhiambo',
+    email: 'akinyi.odhiambo@email.com',
+    phone: '+254 744 678 901',
     apartmentId: 'grandview',
     unitNumber: 'G202',
     rentAmount: 220000,
@@ -134,9 +134,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '5',
-    name: 'David Balogun',
-    email: 'david.balogun@email.com',
-    phone: '+234 805 678 9012',
+    name: 'Peter Njoroge',
+    email: 'peter.njoroge@email.com',
+    phone: '+254 755 789 012',
     apartmentId: 'elite',
     unitNumber: 'E301',
     rentAmount: 250000,
@@ -148,9 +148,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '6',
-    name: 'Amina Ibrahim',
-    email: 'amina.ibrahim@email.com',
-    phone: '+234 806 789 0123',
+    name: 'Faith Wambui',
+    email: 'faith.wambui@email.com',
+    phone: '+254 766 890 123',
     apartmentId: 'elite',
     unitNumber: 'E302',
     rentAmount: 250000,
@@ -162,9 +162,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '7',
-    name: 'Peter Okafor',
-    email: 'peter.okafor@email.com',
-    phone: '+234 807 890 1234',
+    name: 'Daniel Kipchoge',
+    email: 'daniel.kipchoge@email.com',
+    phone: '+254 777 901 234',
     apartmentId: 'edgeview',
     unitNumber: 'D401',
     rentAmount: 225000,
@@ -176,9 +176,9 @@ export const tenants: Tenant[] = [
   },
   {
     id: '8',
-    name: 'Chioma Ugwu',
-    email: 'chioma.ugwu@email.com',
-    phone: '+234 808 901 2345',
+    name: 'Mary Nyambura',
+    email: 'mary.nyambura@email.com',
+    phone: '+254 788 012 345',
     apartmentId: 'edgeview',
     unitNumber: 'D402',
     rentAmount: 225000,
@@ -190,11 +190,28 @@ export const tenants: Tenant[] = [
   },
 ];
 
+// Load tenants from localStorage or use initial data
+export const loadTenants = (): Tenant[] => {
+  const stored = localStorage.getItem('tenants');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return initialTenants;
+};
+
+// Save tenants to localStorage
+export const saveTenants = (tenantList: Tenant[]): void => {
+  localStorage.setItem('tenants', JSON.stringify(tenantList));
+};
+
+// For backward compatibility
+export const tenants = loadTenants();
+
 export const recentPayments: Payment[] = [
   {
     id: 'p1',
     tenantId: '1',
-    tenantName: 'John Adeyemi',
+    tenantName: 'James Mwangi',
     apartmentName: 'Amberview Apartment',
     amount: 250000,
     date: '2024-12-01',
@@ -203,7 +220,7 @@ export const recentPayments: Payment[] = [
   {
     id: 'p2',
     tenantId: '4',
-    tenantName: 'Grace Nnamdi',
+    tenantName: 'Akinyi Odhiambo',
     apartmentName: 'Grandview Apartment',
     amount: 220000,
     date: '2024-12-03',
@@ -212,7 +229,7 @@ export const recentPayments: Payment[] = [
   {
     id: 'p3',
     tenantId: '5',
-    tenantName: 'David Balogun',
+    tenantName: 'Peter Njoroge',
     apartmentName: 'Elite Apartment',
     amount: 250000,
     date: '2024-12-02',
@@ -221,7 +238,7 @@ export const recentPayments: Payment[] = [
   {
     id: 'p4',
     tenantId: '7',
-    tenantName: 'Peter Okafor',
+    tenantName: 'Daniel Kipchoge',
     apartmentName: 'Edgeview Apartment',
     amount: 225000,
     date: '2024-12-01',
