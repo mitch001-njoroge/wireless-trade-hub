@@ -40,7 +40,7 @@ export const apartments: Apartment[] = [
   {
     id: 'amberview',
     name: 'Amberview Apartment',
-    address: '123 Amber Street, Lagos',
+    address: 'Kamiti Road, Roysambu, Nairobi',
     totalUnits: 12,
     occupiedUnits: 10,
     monthlyRevenue: 2500000,
@@ -49,7 +49,7 @@ export const apartments: Apartment[] = [
   {
     id: 'grandview',
     name: 'Grandview Apartment',
-    address: '456 Grand Avenue, Lagos',
+    address: 'Thika Superhighway, Roysambu, Nairobi',
     totalUnits: 16,
     occupiedUnits: 14,
     monthlyRevenue: 3500000,
@@ -58,7 +58,7 @@ export const apartments: Apartment[] = [
   {
     id: 'elite',
     name: 'Elite Apartment',
-    address: '789 Elite Boulevard, Lagos',
+    address: 'Mirema Drive, Roysambu, Nairobi',
     totalUnits: 8,
     occupiedUnits: 8,
     monthlyRevenue: 2000000,
@@ -67,7 +67,7 @@ export const apartments: Apartment[] = [
   {
     id: 'edgeview',
     name: 'Edgeview Apartment',
-    address: '321 Edge Road, Lagos',
+    address: 'Kasarani Road, Roysambu, Nairobi',
     totalUnits: 10,
     occupiedUnits: 9,
     monthlyRevenue: 2250000,
@@ -230,9 +230,9 @@ export const recentPayments: Payment[] = [
 ];
 
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-NG', {
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
-    currency: 'NGN',
+    currency: 'KES',
     minimumFractionDigits: 0,
   }).format(amount);
 };
