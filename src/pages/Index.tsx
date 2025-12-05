@@ -1,16 +1,16 @@
-import { Layout } from '@/components/layout/Layout';
-import { StatsCard } from '@/components/dashboard/StatsCard';
-import { ApartmentOverview } from '@/components/dashboard/ApartmentOverview';
-import { RecentPayments } from '@/components/dashboard/RecentPayments';
-import { OverdueAlerts } from '@/components/dashboard/OverdueAlerts';
-import { apartments, tenants, formatCurrency } from '@/lib/data';
-import { Building2, Users, CreditCard, AlertCircle } from 'lucide-react';
+import { Layout } from "@/components/layout/Layout";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { ApartmentOverview } from "@/components/dashboard/ApartmentOverview";
+import { RecentPayments } from "@/components/dashboard/RecentPayments";
+import { OverdueAlerts } from "@/components/dashboard/OverdueAlerts";
+import { apartments, tenants, formatCurrency } from "@/lib/data";
+import { Building2, Users, CreditCard, AlertCircle } from "lucide-react";
 
 const Index = () => {
   const totalTenants = tenants.length;
   const totalExpectedRent = apartments.reduce((sum, apt) => sum + apt.monthlyRevenue, 0);
   const totalCollectedRent = apartments.reduce((sum, apt) => sum + apt.collectedRevenue, 0);
-  const overdueTenants = tenants.filter((t) => t.paymentStatus === 'unpaid' || t.paymentStatus === 'partial').length;
+  const overdueTenants = tenants.filter((t) => t.paymentStatus === "unpaid" || t.paymentStatus === "partial").length;
   const collectionRate = ((totalCollectedRent / totalExpectedRent) * 100).toFixed(1);
 
   return (
@@ -19,7 +19,7 @@ const Index = () => {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back to Bluetarde Investments</p>
+          <p className="text-muted-foreground">Welcome back to Wireless Trade</p>
         </div>
 
         {/* Stats Grid */}
