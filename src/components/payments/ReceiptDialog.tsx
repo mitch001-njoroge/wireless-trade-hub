@@ -1,13 +1,8 @@
-import { useRef } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Tenant, getApartmentById, formatCurrency } from '@/lib/data';
-import { Printer, Building2 } from 'lucide-react';
+import { useRef } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Tenant, getApartmentById, formatCurrency } from "@/lib/data";
+import { Printer, Building2 } from "lucide-react";
 
 interface ReceiptDialogProps {
   open: boolean;
@@ -21,10 +16,10 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
   if (!tenant) return null;
 
   const apartment = getApartmentById(tenant.apartmentId);
-  const currentDate = new Date().toLocaleDateString('en-KE', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const currentDate = new Date().toLocaleDateString("en-KE", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
   const receiptNumber = `RCP-${Date.now().toString().slice(-8)}`;
 
@@ -32,7 +27,7 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
     const printContent = receiptRef.current;
     if (!printContent) return;
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
     printWindow.document.write(`
@@ -76,17 +71,23 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
 
   const getStatusClass = () => {
     switch (tenant.paymentStatus) {
-      case 'paid': return 'status-paid';
-      case 'partial': return 'status-partial';
-      case 'unpaid': return 'status-unpaid';
+      case "paid":
+        return "status-paid";
+      case "partial":
+        return "status-partial";
+      case "unpaid":
+        return "status-unpaid";
     }
   };
 
   const getStatusText = () => {
     switch (tenant.paymentStatus) {
-      case 'paid': return 'PAID';
-      case 'partial': return 'PARTIAL';
-      case 'unpaid': return 'UNPAID';
+      case "paid":
+        return "PAID";
+      case "partial":
+        return "PARTIAL";
+      case "unpaid":
+        return "UNPAID";
     }
   };
 
@@ -96,7 +97,7 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
         <DialogHeader>
           <DialogTitle>Payment Receipt</DialogTitle>
         </DialogHeader>
-        
+
         <div ref={receiptRef} className="bg-background p-6 rounded-lg">
           {/* Header */}
           <div className="header text-center border-b-2 border-primary pb-4 mb-6">
@@ -105,8 +106,8 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
                 <Building2 className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <div className="company-name text-xl font-bold text-primary">Bluetarde</div>
-                <div className="company-subtitle text-xs text-muted-foreground">Investments Limited</div>
+                <div className="company-name text-xl font-bold text-primary">Wireless</div>
+                <div className="company-subtitle text-xs text-muted-foreground">Trade</div>
               </div>
             </div>
             <div className="receipt-title text-lg mt-4 text-foreground">PAYMENT RECEIPT</div>
@@ -167,7 +168,7 @@ export function ReceiptDialog({ open, onOpenChange, tenant }: ReceiptDialogProps
           {/* Footer */}
           <div className="footer text-center mt-8 text-xs text-muted-foreground">
             <p>Thank you for your payment!</p>
-            <p className="mt-1">Bluetarde Investments Limited | Roysambu, Nairobi</p>
+            <p className="mt-1">Wireless Trade | Nairobi</p>
           </div>
         </div>
 
