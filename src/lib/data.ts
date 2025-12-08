@@ -272,5 +272,6 @@ export const getApartmentById = (id: string): Apartment | undefined => {
 };
 
 export const getTenantsByApartment = (apartmentId: string): Tenant[] => {
-  return tenants.filter((tenant) => tenant.apartmentId === apartmentId);
+  const currentTenants = loadTenants();
+  return currentTenants.filter((tenant) => tenant.apartmentId === apartmentId);
 };
