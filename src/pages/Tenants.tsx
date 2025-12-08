@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +6,19 @@ import { Input } from '@/components/ui/input';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { TenantDialog } from '@/components/tenants/TenantDialog';
 import { loadTenants, saveTenants, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
-import { Search, Plus, Phone, Mail, Building2 } from 'lucide-react';
+import { Search, Plus, Phone, Mail, Building2, UserMinus } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const Tenants = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +83,13 @@ const Tenants = () => {
     
     setTenantsList(updatedList);
     saveTenants(updatedList);
+  };
+
+  const handleVacateTenant = (tenant: Tenant) => {
+    const updatedList = tenantsList.filter((t) => t.id !== tenant.id);
+    setTenantsList(updatedList);
+    saveTenants(updatedList);
+    toast.success(`${tenant.name} has been removed from the system`);
   };
 
   return (
@@ -160,6 +178,29 @@ const Tenants = () => {
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewTenant(tenant)}>
                       View
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="flex-1">
+                          <UserMinus className="h-3 w-3 mr-1" />
+                          Vacate
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove Tenant</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove <strong>{tenant.name}</strong> from the system? 
+                            This action cannot be undone and will permanently delete all their records.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleVacateTenant(tenant)}>
+                            Confirm Vacate
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </CardContent>
               </Card>
