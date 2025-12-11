@@ -8,7 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { apartments, tenants, formatCurrency, getTenantsByApartment } from '@/lib/data';
+import { apartments, loadTenants, formatCurrency, getTenantsByApartment } from '@/lib/data';
+import { exportToPDF, exportToExcel } from '@/lib/exportUtils';
 import { Download, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
@@ -17,13 +18,39 @@ const Reports = () => {
   const [selectedMonth, setSelectedMonth] = useState('december');
   const [selectedApartment, setSelectedApartment] = useState('all');
 
+  const tenants = loadTenants();
   const overdueTenants = tenants.filter((t) => t.paymentStatus === 'unpaid' || t.paymentStatus === 'partial');
 
-  const handleDownload = (type: string) => {
-    toast({
-      title: 'Download Started',
-      description: `Your ${type} report is being generated...`,
-    });
+  const handleDownloadPDF = () => {
+    try {
+      exportToPDF(selectedMonth);
+      toast({
+        title: 'PDF Downloaded',
+        description: 'Your PDF report has been downloaded successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate PDF report.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    try {
+      exportToExcel(selectedMonth);
+      toast({
+        title: 'Excel Downloaded',
+        description: 'Your Excel report has been downloaded successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate Excel report.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const getApartmentStats = (apartmentId: string) => {
@@ -54,11 +81,11 @@ const Reports = () => {
             <p className="text-muted-foreground">Generate and download rental reports</p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => handleDownload('PDF')}>
+            <Button onClick={handleDownloadPDF}>
               <Download className="h-4 w-4 mr-2" />
               Export PDF
             </Button>
-            <Button variant="outline" onClick={() => handleDownload('Excel')}>
+            <Button variant="outline" onClick={handleDownloadExcel}>
               <FileText className="h-4 w-4 mr-2" />
               Export Excel
             </Button>
