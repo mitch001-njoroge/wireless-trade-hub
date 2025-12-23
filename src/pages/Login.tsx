@@ -18,6 +18,7 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showOtpVerification, setShowOtpVerification] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpType, setOtpType] = useState<'signup' | 'email'>('signup');
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -66,6 +67,7 @@ const Login = () => {
             });
           }
         } else {
+          setOtpType('signup');
           setShowOtpVerification(true);
           toast({
             title: 'Verification code sent!',
@@ -73,9 +75,12 @@ const Login = () => {
           });
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        // For sign in, use OTP-based authentication
+        const { error } = await supabase.auth.signInWithOtp({
           email,
-          password,
+          options: {
+            shouldCreateUser: false,
+          }
         });
 
         if (error) {
@@ -85,9 +90,11 @@ const Login = () => {
             variant: 'destructive',
           });
         } else {
+          setOtpType('email');
+          setShowOtpVerification(true);
           toast({
-            title: 'Welcome back!',
-            description: 'You have successfully logged in.',
+            title: 'Verification code sent!',
+            description: 'Please check your email for the OTP code to sign in.',
           });
         }
       }
@@ -117,7 +124,7 @@ const Login = () => {
       const { error } = await supabase.auth.verifyOtp({
         email,
         token: otp,
-        type: 'signup'
+        type: otpType
       });
 
       if (error) {
@@ -128,8 +135,10 @@ const Login = () => {
         });
       } else {
         toast({
-          title: 'Account verified!',
-          description: 'Your account has been verified successfully.',
+          title: otpType === 'signup' ? 'Account verified!' : 'Signed in!',
+          description: otpType === 'signup' 
+            ? 'Your account has been verified successfully.' 
+            : 'You have successfully signed in.',
         });
         navigate('/');
       }
@@ -147,22 +156,44 @@ const Login = () => {
   const handleResendOtp = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
-      });
+      if (otpType === 'signup') {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+        });
 
-      if (error) {
-        toast({
-          title: 'Resend failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        if (error) {
+          toast({
+            title: 'Resend failed',
+            description: error.message,
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Code resent!',
+            description: 'A new verification code has been sent to your email.',
+          });
+        }
       } else {
-        toast({
-          title: 'Code resent!',
-          description: 'A new verification code has been sent to your email.',
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            shouldCreateUser: false,
+          }
         });
+
+        if (error) {
+          toast({
+            title: 'Resend failed',
+            description: error.message,
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Code resent!',
+            description: 'A new verification code has been sent to your email.',
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -175,7 +206,7 @@ const Login = () => {
     }
   };
 
-  const handleBackToSignUp = () => {
+  const handleBackToLogin = () => {
     setShowOtpVerification(false);
     setOtp('');
   };
@@ -189,7 +220,9 @@ const Login = () => {
               <Building2 className="h-8 w-8 text-primary-foreground" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold">Verify Your Email</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                {otpType === 'signup' ? 'Verify Your Email' : 'Enter Sign In Code'}
+              </CardTitle>
               <CardDescription className="text-muted-foreground">
                 Enter the 6-digit code sent to {email}
               </CardDescription>
@@ -218,7 +251,7 @@ const Login = () => {
               className="w-full" 
               disabled={isLoading || otp.length !== 6}
             >
-              {isLoading ? 'Verifying...' : 'Verify Email'}
+              {isLoading ? 'Verifying...' : (otpType === 'signup' ? 'Verify Email' : 'Sign In')}
             </Button>
 
             <div className="text-center space-y-2">
@@ -237,11 +270,11 @@ const Login = () => {
 
             <Button
               variant="ghost"
-              onClick={handleBackToSignUp}
+              onClick={handleBackToLogin}
               className="w-full"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Sign Up
+              Back
             </Button>
           </CardContent>
         </Card>
@@ -276,35 +309,39 @@ const Login = () => {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
+              {isLoading 
+                ? (isSignUp ? 'Creating account...' : 'Sending code...') 
+                : (isSignUp ? 'Sign Up' : 'Send Sign In Code')}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
