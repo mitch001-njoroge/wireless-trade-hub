@@ -12,18 +12,19 @@ import {
 } from '@/components/ui/select';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { ReceiptDialog } from '@/components/payments/ReceiptDialog';
-import { tenants, apartments, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
+import { loadTenants, saveTenants, apartments, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
 import { Search, Filter, CheckCircle, FileText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Payments = () => {
+  const [tenantList, setTenantList] = useState<Tenant[]>(() => loadTenants());
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [apartmentFilter, setApartmentFilter] = useState<string>('all');
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
-  const filteredTenants = tenants.filter((tenant) => {
+  const filteredTenants = tenantList.filter((tenant) => {
     const matchesSearch =
       tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tenant.unitNumber.toLowerCase().includes(searchQuery.toLowerCase());
@@ -32,10 +33,27 @@ const Payments = () => {
     return matchesSearch && matchesStatus && matchesApartment;
   });
 
-  const handleMarkAsPaid = (tenantName: string) => {
+  const handleMarkAsPaid = (tenantId: string) => {
+    const updatedTenants = tenantList.map((tenant) => {
+      if (tenant.id === tenantId) {
+        return {
+          ...tenant,
+          amountPaid: tenant.rentAmount,
+          balance: 0,
+          paymentStatus: 'paid' as const,
+          lastPaymentDate: new Date().toISOString().split('T')[0],
+        };
+      }
+      return tenant;
+    });
+    
+    setTenantList(updatedTenants);
+    saveTenants(updatedTenants);
+    
+    const tenant = tenantList.find(t => t.id === tenantId);
     toast({
       title: 'Payment Recorded',
-      description: `${tenantName}'s rent has been marked as paid.`,
+      description: `${tenant?.name}'s rent has been marked as paid.`,
     });
   };
 
@@ -149,7 +167,7 @@ const Payments = () => {
                                 size="sm"
                                 variant="outline"
                                 className="text-success border-success/30 hover:bg-success/10"
-                                onClick={() => handleMarkAsPaid(tenant.name)}
+                                onClick={() => handleMarkAsPaid(tenant.id)}
                               >
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 Mark Paid
