@@ -61,24 +61,29 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 w-64 bg-sidebar transform transition-transform duration-200 ease-in-out lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border transform transition-transform duration-200 ease-in-out lg:translate-x-0',
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border">
-            <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-sidebar-primary-foreground" />
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
+            <div className="w-9 h-9 rounded-md bg-primary flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-sm font-semibold text-sidebar-foreground">Wireless Trade</h1>
-              <p className="text-xs text-sidebar-foreground/70">Property Management</p>
+              <p className="text-[11px] text-sidebar-foreground/60 uppercase tracking-wider">Portal</p>
             </div>
           </div>
 
+          {/* Navigation Label */}
+          <div className="px-6 pt-6 pb-2">
+            <p className="text-[10px] font-medium text-sidebar-foreground/50 uppercase tracking-wider">Main Menu</p>
+          </div>
+
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="flex-1 px-3 space-y-0.5">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -87,13 +92,13 @@ export function Sidebar() {
                   to={item.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150',
                     isActive
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className={cn('h-4 w-4', isActive && 'text-primary-foreground')} />
                   {item.name}
                 </Link>
               );
@@ -101,13 +106,13 @@ export function Sidebar() {
           </nav>
 
           {/* Logout */}
-          <div className="px-4 py-6 border-t border-sidebar-border">
+          <div className="px-3 py-4 border-t border-sidebar-border">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors w-full"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-destructive/80 hover:bg-destructive/10 hover:text-destructive transition-all duration-150 w-full"
             >
-              <LogOut className="h-5 w-5" />
-              Logout
+              <LogOut className="h-4 w-4" />
+              Sign Out
             </button>
           </div>
         </div>
