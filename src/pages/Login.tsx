@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import logo from '@/assets/logo.jpg';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -185,9 +186,7 @@ const Login = () => {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md animate-fade-in">
           <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 rounded-xl bg-primary flex items-center justify-center">
-              <Building2 className="h-8 w-8 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="Wireless Trade" className="mx-auto w-20 h-20 object-contain" />
             <div>
               <CardTitle className="text-2xl font-bold">Verify Your Email</CardTitle>
               <CardDescription className="text-muted-foreground">
@@ -253,9 +252,7 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 rounded-xl bg-primary flex items-center justify-center">
-            <Building2 className="h-8 w-8 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="Wireless Trade" className="mx-auto w-20 h-20 object-contain" />
           <div>
             <CardTitle className="text-2xl font-bold">Wireless Trade</CardTitle>
             <CardDescription className="text-muted-foreground">
