@@ -14,16 +14,211 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      billing_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_id: string
+          mpesa_receipt: string | null
+          notes: string | null
+          payment_date: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          phone_number: string | null
+          transaction_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          mpesa_receipt?: string | null
+          notes?: string | null
+          payment_date?: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          phone_number?: string | null
+          transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          mpesa_receipt?: string | null
+          notes?: string | null
+          payment_date?: string
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          phone_number?: string | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          amount: number
+          charge_type: Database["public"]["Enums"]["charge_type"]
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          amount: number
+          charge_type: Database["public"]["Enums"]["charge_type"]
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          unit_price: number
+        }
+        Update: {
+          amount?: number
+          charge_type?: Database["public"]["Enums"]["charge_type"]
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount_paid: number
+          apartment_id: string
+          apartment_name: string
+          balance: number
+          created_at: string
+          due_date: string
+          id: string
+          invoice_number: string
+          issue_date: string
+          notes: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tenant_id: string
+          tenant_name: string
+          tenant_phone: string
+          total_amount: number
+          unit_number: string
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          apartment_id: string
+          apartment_name: string
+          balance?: number
+          created_at?: string
+          due_date: string
+          id?: string
+          invoice_number: string
+          issue_date?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tenant_id: string
+          tenant_name: string
+          tenant_phone: string
+          total_amount?: number
+          unit_number: string
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          apartment_id?: string
+          apartment_name?: string
+          balance?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          issue_date?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tenant_id?: string
+          tenant_name?: string
+          tenant_phone?: string
+          total_amount?: number
+          unit_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recurring_billing: {
+        Row: {
+          apartment_id: string
+          billing_day: number
+          created_at: string
+          due_day: number
+          id: string
+          is_active: boolean
+          items: Json
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          apartment_id: string
+          billing_day?: number
+          created_at?: string
+          due_day?: number
+          id?: string
+          is_active?: boolean
+          items?: Json
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          apartment_id?: string
+          billing_day?: number
+          created_at?: string
+          due_day?: number
+          id?: string
+          is_active?: boolean
+          items?: Json
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_invoice_number: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      charge_type:
+        | "rent"
+        | "water"
+        | "electricity"
+        | "garbage"
+        | "security"
+        | "parking"
+        | "other"
+      invoice_status: "draft" | "pending" | "paid" | "overdue" | "cancelled"
+      payment_method: "mpesa" | "bank_transfer" | "cash" | "card"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +345,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      charge_type: [
+        "rent",
+        "water",
+        "electricity",
+        "garbage",
+        "security",
+        "parking",
+        "other",
+      ],
+      invoice_status: ["draft", "pending", "paid", "overdue", "cancelled"],
+      payment_method: ["mpesa", "bank_transfer", "cash", "card"],
+    },
   },
 } as const
