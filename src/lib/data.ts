@@ -43,8 +43,8 @@ export const apartments: Apartment[] = [
     address: "Lumumba, Roysambu, Nairobi",
     totalUnits: 12,
     occupiedUnits: 10,
-    monthlyRevenue: 2500000,
-    collectedRevenue: 2100000,
+    monthlyRevenue: 361000,
+    collectedRevenue: 0,
   },
   {
     id: "grandview",
@@ -52,8 +52,8 @@ export const apartments: Apartment[] = [
     address: "Mirema Drive, Roysambu, Nairobi",
     totalUnits: 16,
     occupiedUnits: 14,
-    monthlyRevenue: 3500000,
-    collectedRevenue: 3200000,
+    monthlyRevenue: 625000,
+    collectedRevenue: 0,
   },
   {
     id: "elite",
@@ -61,8 +61,8 @@ export const apartments: Apartment[] = [
     address: "Mirema Drive, Roysambu, Nairobi",
     totalUnits: 8,
     occupiedUnits: 8,
-    monthlyRevenue: 2000000,
-    collectedRevenue: 1800000,
+    monthlyRevenue: 570000,
+    collectedRevenue: 0,
   },
   {
     id: "edgeview",
@@ -70,8 +70,8 @@ export const apartments: Apartment[] = [
     address: "Mirema Drive, Roysambu, Nairobi",
     totalUnits: 10,
     occupiedUnits: 9,
-    monthlyRevenue: 2250000,
-    collectedRevenue: 1950000,
+    monthlyRevenue: 567000,
+    collectedRevenue: 0,
   },
 ];
 
