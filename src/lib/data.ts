@@ -745,44 +745,7 @@ export const saveTenants = (tenantList: Tenant[]): void => {
 // For backward compatibility
 export const tenants = loadTenants();
 
-export const recentPayments: Payment[] = [
-  {
-    id: "p1",
-    tenantId: "1",
-    tenantName: "James Mwangi",
-    apartmentName: "Amberview Apartment",
-    amount: 250000,
-    date: "2024-12-01",
-    method: "Bank Transfer",
-  },
-  {
-    id: "p2",
-    tenantId: "4",
-    tenantName: "Akinyi Odhiambo",
-    apartmentName: "Grandview Apartment",
-    amount: 220000,
-    date: "2024-12-03",
-    method: "Bank Transfer",
-  },
-  {
-    id: "p3",
-    tenantId: "5",
-    tenantName: "Peter Njoroge",
-    apartmentName: "Elite Apartment",
-    amount: 250000,
-    date: "2024-12-02",
-    method: "Cash",
-  },
-  {
-    id: "p4",
-    tenantId: "7",
-    tenantName: "Daniel Kipchoge",
-    apartmentName: "Edgeview Apartment",
-    amount: 225000,
-    date: "2024-12-01",
-    method: "Bank Transfer",
-  },
-];
+export const recentPayments: Payment[] = [];
 
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat("en-KE", {
