@@ -24,19 +24,47 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
-          navigate('/');
+          // Defer role check to prevent deadlock
+          setTimeout(() => {
+            checkRoleAndRedirect(session.user.id);
+          }, 0);
         }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate('/');
+        checkRoleAndRedirect(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const checkRoleAndRedirect = async (userId: string) => {
+    try {
+      const { data: roleData, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching role:', error);
+        navigate('/');
+        return;
+      }
+
+      if (roleData?.role === 'tenant') {
+        navigate('/tenant');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Role check error:', err);
+      navigate('/');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +143,7 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         email,
         token: otp,
         type: 'signup'
@@ -132,7 +160,7 @@ const Login = () => {
           title: 'Account verified!',
           description: 'Your account has been verified successfully.',
         });
-        navigate('/');
+        // Role-based redirect will be handled by onAuthStateChange
       }
     } catch (error) {
       toast({
