@@ -8,6 +8,3 @@ verify_jwt = false
 
 [functions.mpesa-query]
 verify_jwt = true
-
-[functions.create-tenant-account]
-verify_jwt = true

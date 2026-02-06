@@ -13,7 +13,6 @@ import {
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { ReceiptDialog } from '@/components/payments/ReceiptDialog';
 import { MpesaPaymentDialog } from '@/components/payments/MpesaPaymentDialog';
-import { BankTransferPaymentDialog } from '@/components/payments/BankTransferPaymentDialog';
 import { loadTenants, saveTenants, apartments, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
 import { Search, Filter, CheckCircle, FileText, Smartphone, Building2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -25,16 +24,7 @@ const Payments = () => {
   const [apartmentFilter, setApartmentFilter] = useState<string>('all');
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
   const [mpesaDialogOpen, setMpesaDialogOpen] = useState(false);
-  const [bankTransferDialogOpen, setBankTransferDialogOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
-
-  const generateBankReferenceCode = (tenant: Tenant) => {
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = String(now.getFullYear()).slice(-2);
-    const hash = tenant.id.substring(0, 4).toUpperCase();
-    return `BANK${year}${month}${hash}`;
-  };
 
   const filteredTenants = tenantList.filter((tenant) => {
     const matchesSearch =
@@ -79,23 +69,11 @@ const Payments = () => {
     setMpesaDialogOpen(true);
   };
 
-  const handleBankTransferPayment = (tenant: Tenant) => {
-    setSelectedTenant(tenant);
-    setBankTransferDialogOpen(true);
-  };
-
   const handleMpesaSuccess = () => {
     if (selectedTenant) {
       handleMarkAsPaid(selectedTenant.id);
     }
     setMpesaDialogOpen(false);
-  };
-
-  const handleBankTransferSuccess = () => {
-    if (selectedTenant) {
-      handleMarkAsPaid(selectedTenant.id);
-    }
-    setBankTransferDialogOpen(false);
   };
 
   return (
@@ -196,47 +174,39 @@ const Payments = () => {
                         <td className="py-4 px-4 text-sm text-muted-foreground">
                           {tenant.lastPaymentDate || '-'}
                         </td>
-                         <td className="py-4 px-4">
-                           <div className="flex justify-end gap-2">
-                             {tenant.paymentStatus !== 'paid' && (
-                               <>
-                                 <Button
-                                   size="sm"
-                                   className="bg-primary hover:bg-primary/90"
-                                   onClick={() => handleMpesaPayment(tenant)}
-                                 >
-                                   <Smartphone className="h-3 w-3 mr-1" />
-                                   M-Pesa
-                                 </Button>
-                                 <Button
-                                   size="sm"
-                                   variant="outline"
-                                   onClick={() => handleBankTransferPayment(tenant)}
-                                 >
-                                   <Building2 className="h-3 w-3 mr-1" />
-                                   Bank
-                                 </Button>
-                                 <Button
-                                   size="sm"
-                                   variant="outline"
-                                   className="text-success border-success/30 hover:bg-success/10"
-                                   onClick={() => handleMarkAsPaid(tenant.id)}
-                                 >
-                                   <CheckCircle className="h-3 w-3 mr-1" />
-                                   Mark Paid
-                                 </Button>
-                               </>
-                             )}
-                             <Button 
-                               size="sm" 
-                               variant="outline"
-                               onClick={() => handleGenerateReceipt(tenant)}
-                             >
-                               <FileText className="h-3 w-3 mr-1" />
-                               Receipt
-                             </Button>
-                           </div>
-                         </td>
+                        <td className="py-4 px-4">
+                          <div className="flex justify-end gap-2">
+                            {tenant.paymentStatus !== 'paid' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="bg-primary hover:bg-primary/90"
+                                  onClick={() => handleMpesaPayment(tenant)}
+                                >
+                                  <Smartphone className="h-3 w-3 mr-1" />
+                                  M-Pesa
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-success border-success/30 hover:bg-success/10"
+                                  onClick={() => handleMarkAsPaid(tenant.id)}
+                                >
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Mark Paid
+                                </Button>
+                              </>
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleGenerateReceipt(tenant)}
+                            >
+                              <FileText className="h-3 w-3 mr-1" />
+                              Receipt
+                            </Button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -269,19 +239,6 @@ const Payments = () => {
           amount={selectedTenant.balance}
           tenantId={selectedTenant.id}
           onSuccess={handleMpesaSuccess}
-        />
-      )}
-
-      {selectedTenant && (
-        <BankTransferPaymentDialog
-          open={bankTransferDialogOpen}
-          onOpenChange={setBankTransferDialogOpen}
-          tenantName={selectedTenant.name}
-          unitNumber={selectedTenant.unitNumber}
-          amount={selectedTenant.balance}
-          tenantId={selectedTenant.id}
-          referenceCode={generateBankReferenceCode(selectedTenant)}
-          onSuccess={handleBankTransferSuccess}
         />
       )}
     </Layout>

@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { TenantDialog } from '@/components/tenants/TenantDialog';
-import { CreateTenantAccountDialog } from '@/components/tenants/CreateTenantAccountDialog';
 import { loadTenants, saveTenants, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
-import { Search, Plus, Phone, Mail, Building2, UserMinus, UserPlus } from 'lucide-react';
+import { Search, Plus, Phone, Mail, Building2, UserMinus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -27,8 +26,6 @@ const Tenants = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
-  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
-  const [selectedTenantForAccount, setSelectedTenantForAccount] = useState<Tenant | null>(null);
 
   const filteredTenants = tenantsList.filter(
     (tenant) =>
@@ -93,11 +90,6 @@ const Tenants = () => {
     setTenantsList(updatedList);
     saveTenants(updatedList);
     toast.success(`${tenant.name} has been removed from the system`);
-  };
-
-  const handleCreateAccount = (tenant: Tenant) => {
-    setSelectedTenantForAccount(tenant);
-    setAccountDialogOpen(true);
   };
 
   return (
@@ -178,51 +170,43 @@ const Tenants = () => {
                     </div>
                   )}
 
-                   {/* Actions */}
-                   <div className="flex flex-wrap gap-2 pt-2">
-                     <Button variant="outline" size="sm" onClick={() => handleEditTenant(tenant)}>
-                       Edit
-                     </Button>
-                     <Button variant="outline" size="sm" onClick={() => handleViewTenant(tenant)}>
-                       View
-                     </Button>
-                     <Button 
-                       variant="outline" 
-                       size="sm"
-                       onClick={() => handleCreateAccount(tenant)}
-                     >
-                       <UserPlus className="h-3 w-3 mr-1" />
-                       Account
-                     </Button>
-                     <AlertDialog>
-                       <AlertDialogTrigger asChild>
-                         <Button variant="destructive" size="sm">
-                           <UserMinus className="h-3 w-3 mr-1" />
-                           Vacate
-                         </Button>
-                       </AlertDialogTrigger>
-                       <AlertDialogContent>
-                         <AlertDialogHeader>
-                           <AlertDialogTitle>Remove Tenant</AlertDialogTitle>
-                           <AlertDialogDescription>
-                             Are you sure you want to remove <strong>{tenant.name}</strong> from the system? 
-                             This action cannot be undone and will permanently delete all their records.
-                           </AlertDialogDescription>
-                         </AlertDialogHeader>
-                         <AlertDialogFooter>
-                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                           <AlertDialogAction onClick={() => handleVacateTenant(tenant)}>
-                             Confirm Vacate
-                           </AlertDialogAction>
-                         </AlertDialogFooter>
-                       </AlertDialogContent>
-                     </AlertDialog>
-                   </div>
-                 </CardContent>
-               </Card>
-             );
-           })}
-         </div>
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-2">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditTenant(tenant)}>
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewTenant(tenant)}>
+                      View
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="flex-1">
+                          <UserMinus className="h-3 w-3 mr-1" />
+                          Vacate
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove Tenant</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove <strong>{tenant.name}</strong> from the system? 
+                            This action cannot be undone and will permanently delete all their records.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleVacateTenant(tenant)}>
+                            Confirm Vacate
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
         {filteredTenants.length === 0 && (
           <div className="text-center py-12">
@@ -238,16 +222,6 @@ const Tenants = () => {
         mode={dialogMode}
         onSave={handleSaveTenant}
       />
-
-      {selectedTenantForAccount && (
-        <CreateTenantAccountDialog
-          open={accountDialogOpen}
-          onOpenChange={setAccountDialogOpen}
-          tenantId={selectedTenantForAccount.id}
-          tenantName={selectedTenantForAccount.name}
-          tenantEmail={selectedTenantForAccount.email}
-        />
-      )}
     </Layout>
   );
 };
