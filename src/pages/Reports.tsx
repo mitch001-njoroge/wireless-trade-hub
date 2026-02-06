@@ -11,11 +11,24 @@ import {
 import { apartments, loadTenants, formatCurrency, getTenantsByApartment } from '@/lib/data';
 import { exportToPDF, exportToExcel } from '@/lib/exportUtils';
 import { Download, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { format, subMonths, startOfMonth } from 'date-fns';
 
 const Reports = () => {
-  const [selectedMonth, setSelectedMonth] = useState('december');
+  // Generate last 12 months for dropdown
+  const months = useMemo(() => {
+    const now = new Date();
+    return Array.from({ length: 12 }, (_, i) => {
+      const date = subMonths(startOfMonth(now), i);
+      return {
+        value: format(date, 'yyyy-MM'),
+        label: format(date, 'MMMM yyyy'),
+      };
+    });
+  }, []);
+
+  const [selectedMonth, setSelectedMonth] = useState(months[0]?.value || '');
   const [selectedApartment, setSelectedApartment] = useState('all');
 
   const tenants = loadTenants();
@@ -99,9 +112,11 @@ const Reports = () => {
               <SelectValue placeholder="Select Month" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="december">December 2024</SelectItem>
-              <SelectItem value="november">November 2024</SelectItem>
-              <SelectItem value="october">October 2024</SelectItem>
+              {months.map((month) => (
+                <SelectItem key={month.value} value={month.value}>
+                  {month.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={selectedApartment} onValueChange={setSelectedApartment}>
