@@ -165,6 +165,78 @@ export type Database = {
         }
         Relationships: []
       }
+      mpesa_transactions: {
+        Row: {
+          account_reference: string | null
+          amount: number
+          checkout_request_id: string
+          created_at: string
+          id: string
+          merchant_request_id: string | null
+          mpesa_receipt_number: string | null
+          phone_number: string
+          rent_period_id: string | null
+          result_code: number | null
+          result_desc: string | null
+          status: string
+          tenant_id: string | null
+          transaction_date: string | null
+          transaction_desc: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_reference?: string | null
+          amount: number
+          checkout_request_id: string
+          created_at?: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt_number?: string | null
+          phone_number: string
+          rent_period_id?: string | null
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          tenant_id?: string | null
+          transaction_date?: string | null
+          transaction_desc?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_reference?: string | null
+          amount?: number
+          checkout_request_id?: string
+          created_at?: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt_number?: string | null
+          phone_number?: string
+          rent_period_id?: string | null
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          tenant_id?: string | null
+          transaction_date?: string | null
+          transaction_desc?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mpesa_transactions_rent_period_id_fkey"
+            columns: ["rent_period_id"]
+            isOneToOne: false
+            referencedRelation: "rent_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mpesa_transactions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recurring_billing: {
         Row: {
           apartment_id: string
@@ -201,12 +273,172 @@ export type Database = {
         }
         Relationships: []
       }
+      rent_payments: {
+        Row: {
+          amount: number
+          bank_reference: string | null
+          created_at: string
+          id: string
+          mpesa_receipt: string | null
+          notes: string | null
+          payment_date: string
+          payment_method: Database["public"]["Enums"]["rent_payment_method"]
+          phone_number: string | null
+          rent_period_id: string
+          tenant_id: string
+          transaction_id: string | null
+          verified: boolean
+          verified_at: string | null
+        }
+        Insert: {
+          amount: number
+          bank_reference?: string | null
+          created_at?: string
+          id?: string
+          mpesa_receipt?: string | null
+          notes?: string | null
+          payment_date?: string
+          payment_method: Database["public"]["Enums"]["rent_payment_method"]
+          phone_number?: string | null
+          rent_period_id: string
+          tenant_id: string
+          transaction_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bank_reference?: string | null
+          created_at?: string
+          id?: string
+          mpesa_receipt?: string | null
+          notes?: string | null
+          payment_date?: string
+          payment_method?: Database["public"]["Enums"]["rent_payment_method"]
+          phone_number?: string | null
+          rent_period_id?: string
+          tenant_id?: string
+          transaction_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rent_payments_rent_period_id_fkey"
+            columns: ["rent_period_id"]
+            isOneToOne: false
+            referencedRelation: "rent_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rent_payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rent_periods: {
+        Row: {
+          amount_paid: number
+          balance: number | null
+          created_at: string
+          due_date: string
+          id: string
+          month: number
+          payment_reference: string | null
+          rent_amount: number
+          status: Database["public"]["Enums"]["rent_status"]
+          tenant_id: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          amount_paid?: number
+          balance?: number | null
+          created_at?: string
+          due_date: string
+          id?: string
+          month: number
+          payment_reference?: string | null
+          rent_amount: number
+          status?: Database["public"]["Enums"]["rent_status"]
+          tenant_id: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          amount_paid?: number
+          balance?: number | null
+          created_at?: string
+          due_date?: string
+          id?: string
+          month?: number
+          payment_reference?: string | null
+          rent_amount?: number
+          status?: Database["public"]["Enums"]["rent_status"]
+          tenant_id?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rent_periods_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          apartment_id: string
+          apartment_name: string
+          created_at: string
+          due_day: number
+          id: string
+          name: string
+          phone: string
+          rent_amount: number
+          unit_number: string
+          updated_at: string
+        }
+        Insert: {
+          apartment_id: string
+          apartment_name: string
+          created_at?: string
+          due_day?: number
+          id?: string
+          name: string
+          phone: string
+          rent_amount?: number
+          unit_number: string
+          updated_at?: string
+        }
+        Update: {
+          apartment_id?: string
+          apartment_name?: string
+          created_at?: string
+          due_day?: number
+          id?: string
+          name?: string
+          phone?: string
+          rent_amount?: number
+          unit_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_invoice_number: { Args: never; Returns: string }
+      generate_payment_reference: { Args: never; Returns: string }
+      mark_overdue_rent_periods: { Args: never; Returns: undefined }
     }
     Enums: {
       charge_type:
@@ -219,6 +451,8 @@ export type Database = {
         | "other"
       invoice_status: "draft" | "pending" | "paid" | "overdue" | "cancelled"
       payment_method: "mpesa" | "bank_transfer" | "cash" | "card"
+      rent_payment_method: "mpesa" | "bank_transfer" | "cash"
+      rent_status: "paid" | "unpaid" | "overdue" | "partial"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -357,6 +591,8 @@ export const Constants = {
       ],
       invoice_status: ["draft", "pending", "paid", "overdue", "cancelled"],
       payment_method: ["mpesa", "bank_transfer", "cash", "card"],
+      rent_payment_method: ["mpesa", "bank_transfer", "cash"],
+      rent_status: ["paid", "unpaid", "overdue", "partial"],
     },
   },
 } as const

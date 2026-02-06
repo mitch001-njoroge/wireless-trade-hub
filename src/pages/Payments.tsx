@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/select';
 import { PaymentStatusBadge } from '@/components/dashboard/PaymentStatusBadge';
 import { ReceiptDialog } from '@/components/payments/ReceiptDialog';
+import { MpesaPaymentDialog } from '@/components/payments/MpesaPaymentDialog';
 import { loadTenants, saveTenants, apartments, getApartmentById, formatCurrency, Tenant } from '@/lib/data';
-import { Search, Filter, CheckCircle, FileText } from 'lucide-react';
+import { Search, Filter, CheckCircle, FileText, Smartphone, Building2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Payments = () => {
@@ -22,6 +23,7 @@ const Payments = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [apartmentFilter, setApartmentFilter] = useState<string>('all');
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const [mpesaDialogOpen, setMpesaDialogOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
   const filteredTenants = tenantList.filter((tenant) => {
@@ -60,6 +62,18 @@ const Payments = () => {
   const handleGenerateReceipt = (tenant: Tenant) => {
     setSelectedTenant(tenant);
     setReceiptDialogOpen(true);
+  };
+
+  const handleMpesaPayment = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setMpesaDialogOpen(true);
+  };
+
+  const handleMpesaSuccess = () => {
+    if (selectedTenant) {
+      handleMarkAsPaid(selectedTenant.id);
+    }
+    setMpesaDialogOpen(false);
   };
 
   return (
@@ -163,15 +177,25 @@ const Payments = () => {
                         <td className="py-4 px-4">
                           <div className="flex justify-end gap-2">
                             {tenant.paymentStatus !== 'paid' && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-success border-success/30 hover:bg-success/10"
-                                onClick={() => handleMarkAsPaid(tenant.id)}
-                              >
-                                <CheckCircle className="h-3 w-3 mr-1" />
-                                Mark Paid
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="bg-primary hover:bg-primary/90"
+                                  onClick={() => handleMpesaPayment(tenant)}
+                                >
+                                  <Smartphone className="h-3 w-3 mr-1" />
+                                  M-Pesa
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-success border-success/30 hover:bg-success/10"
+                                  onClick={() => handleMarkAsPaid(tenant.id)}
+                                >
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Mark Paid
+                                </Button>
+                              </>
                             )}
                             <Button 
                               size="sm" 
@@ -204,6 +228,19 @@ const Payments = () => {
         onOpenChange={setReceiptDialogOpen}
         tenant={selectedTenant}
       />
+
+      {selectedTenant && (
+        <MpesaPaymentDialog
+          open={mpesaDialogOpen}
+          onOpenChange={setMpesaDialogOpen}
+          tenantName={selectedTenant.name}
+          tenantPhone={selectedTenant.phone}
+          unitNumber={selectedTenant.unitNumber}
+          amount={selectedTenant.balance}
+          tenantId={selectedTenant.id}
+          onSuccess={handleMpesaSuccess}
+        />
+      )}
     </Layout>
   );
 };

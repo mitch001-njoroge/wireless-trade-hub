@@ -3,15 +3,17 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ApartmentOverview } from "@/components/dashboard/ApartmentOverview";
 import { RecentPayments } from "@/components/dashboard/RecentPayments";
 import { OverdueAlerts } from "@/components/dashboard/OverdueAlerts";
-import { apartments, tenants, formatCurrency } from "@/lib/data";
+import { PaymentStatusOverview } from "@/components/dashboard/PaymentStatusOverview";
+import { apartments, loadTenants, formatCurrency } from "@/lib/data";
 import { Building2, Users, CreditCard, AlertCircle } from "lucide-react";
 
 const Index = () => {
+  const tenants = loadTenants();
   const totalTenants = tenants.length;
   const totalExpectedRent = apartments.reduce((sum, apt) => sum + apt.monthlyRevenue, 0);
-  const totalCollectedRent = apartments.reduce((sum, apt) => sum + apt.collectedRevenue, 0);
+  const totalCollectedRent = tenants.reduce((sum, t) => sum + t.amountPaid, 0);
   const overdueTenants = tenants.filter((t) => t.paymentStatus === "unpaid" || t.paymentStatus === "partial").length;
-  const collectionRate = ((totalCollectedRent / totalExpectedRent) * 100).toFixed(1);
+  const collectionRate = totalExpectedRent > 0 ? ((totalCollectedRent / totalExpectedRent) * 100).toFixed(1) : "0";
 
   return (
     <Layout>
@@ -52,13 +54,17 @@ const Index = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ApartmentOverview />
-          <OverdueAlerts />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <ApartmentOverview />
+          </div>
+          <PaymentStatusOverview />
         </div>
 
-        {/* Recent Payments */}
-        <RecentPayments />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <OverdueAlerts />
+          <RecentPayments />
+        </div>
       </div>
     </Layout>
   );
