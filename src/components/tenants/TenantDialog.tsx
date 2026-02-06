@@ -15,85 +15,80 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { apartments, Tenant, PaymentStatus } from '@/lib/data';
-import { toast } from '@/hooks/use-toast';
+import { apartments } from '@/lib/data';
+import type { Database } from '@/integrations/supabase/types';
+
+type TenantRow = Database['public']['Tables']['tenants']['Row'];
+type TenantInsert = Database['public']['Tables']['tenants']['Insert'];
 
 interface TenantDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tenant?: Tenant | null;
+  tenant?: TenantRow | null;
   mode: 'add' | 'edit' | 'view';
-  onSave?: (tenant: Partial<Tenant>) => void;
+  onSave?: (tenant: TenantInsert) => void;
 }
 
 export function TenantDialog({ open, onOpenChange, tenant, mode, onSave }: TenantDialogProps) {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     phone: '',
-    apartmentId: '',
-    unitNumber: '',
-    rentAmount: '',
-    amountPaid: '',
-    paymentStatus: 'unpaid' as PaymentStatus,
+    apartment_id: '',
+    apartment_name: '',
+    unit_number: '',
+    rent_amount: '',
+    due_day: '5',
   });
 
   useEffect(() => {
     if (tenant && (mode === 'edit' || mode === 'view')) {
       setFormData({
         name: tenant.name,
-        email: tenant.email,
         phone: tenant.phone,
-        apartmentId: tenant.apartmentId,
-        unitNumber: tenant.unitNumber,
-        rentAmount: tenant.rentAmount.toString(),
-        amountPaid: tenant.amountPaid.toString(),
-        paymentStatus: tenant.paymentStatus,
+        apartment_id: tenant.apartment_id,
+        apartment_name: tenant.apartment_name,
+        unit_number: tenant.unit_number,
+        rent_amount: tenant.rent_amount.toString(),
+        due_day: tenant.due_day.toString(),
       });
     } else if (mode === 'add') {
       setFormData({
         name: '',
-        email: '',
         phone: '',
-        apartmentId: '',
-        unitNumber: '',
-        rentAmount: '',
-        amountPaid: '0',
-        paymentStatus: 'unpaid',
+        apartment_id: '',
+        apartment_name: '',
+        unit_number: '',
+        rent_amount: '',
+        due_day: '5',
       });
     }
   }, [tenant, mode, open]);
 
+  const handleApartmentChange = (apartmentId: string) => {
+    const selectedApt = apartments.find(apt => apt.id === apartmentId);
+    setFormData({
+      ...formData,
+      apartment_id: apartmentId,
+      apartment_name: selectedApt?.name || '',
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const rentAmount = parseFloat(formData.rentAmount);
-    const amountPaid = parseFloat(formData.amountPaid);
-    const balance = rentAmount - amountPaid;
-    
-    let paymentStatus: PaymentStatus = 'unpaid';
-    if (amountPaid >= rentAmount) {
-      paymentStatus = 'paid';
-    } else if (amountPaid > 0) {
-      paymentStatus = 'partial';
-    }
 
-    const tenantData: Partial<Tenant> = {
-      ...formData,
-      rentAmount,
-      amountPaid,
-      balance,
-      paymentStatus,
+    const tenantData: TenantInsert = {
+      name: formData.name,
+      phone: formData.phone,
+      apartment_id: formData.apartment_id,
+      apartment_name: formData.apartment_name,
+      unit_number: formData.unit_number,
+      rent_amount: parseFloat(formData.rent_amount),
+      due_day: parseInt(formData.due_day, 10),
     };
 
     if (onSave) {
       onSave(tenantData);
     }
-
-    toast({
-      title: mode === 'add' ? 'Tenant Added' : 'Tenant Updated',
-      description: `${formData.name} has been ${mode === 'add' ? 'added' : 'updated'} successfully.`,
-    });
 
     onOpenChange(false);
   };
@@ -119,32 +114,22 @@ export function TenantDialog({ open, onOpenChange, tenant, mode, onSave }: Tenan
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={isViewMode}
-                required
-              />
-            </div>
-            <div>
+            <div className="col-span-2">
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={isViewMode}
+                placeholder="+254 7XX XXX XXX"
                 required
               />
             </div>
             <div>
               <Label htmlFor="apartment">Apartment</Label>
               <Select
-                value={formData.apartmentId}
-                onValueChange={(value) => setFormData({ ...formData, apartmentId: value })}
+                value={formData.apartment_id}
+                onValueChange={handleApartmentChange}
                 disabled={isViewMode}
               >
                 <SelectTrigger>
@@ -163,9 +148,10 @@ export function TenantDialog({ open, onOpenChange, tenant, mode, onSave }: Tenan
               <Label htmlFor="unitNumber">Unit Number</Label>
               <Input
                 id="unitNumber"
-                value={formData.unitNumber}
-                onChange={(e) => setFormData({ ...formData, unitNumber: e.target.value })}
+                value={formData.unit_number}
+                onChange={(e) => setFormData({ ...formData, unit_number: e.target.value })}
                 disabled={isViewMode}
+                placeholder="e.g. A1, House 5"
                 required
               />
             </div>
@@ -174,19 +160,21 @@ export function TenantDialog({ open, onOpenChange, tenant, mode, onSave }: Tenan
               <Input
                 id="rentAmount"
                 type="number"
-                value={formData.rentAmount}
-                onChange={(e) => setFormData({ ...formData, rentAmount: e.target.value })}
+                value={formData.rent_amount}
+                onChange={(e) => setFormData({ ...formData, rent_amount: e.target.value })}
                 disabled={isViewMode}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="amountPaid">Amount Paid (KES)</Label>
+              <Label htmlFor="dueDay">Due Day of Month</Label>
               <Input
-                id="amountPaid"
+                id="dueDay"
                 type="number"
-                value={formData.amountPaid}
-                onChange={(e) => setFormData({ ...formData, amountPaid: e.target.value })}
+                min="1"
+                max="28"
+                value={formData.due_day}
+                onChange={(e) => setFormData({ ...formData, due_day: e.target.value })}
                 disabled={isViewMode}
               />
             </div>
