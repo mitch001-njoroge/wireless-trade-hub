@@ -8,3 +8,12 @@ verify_jwt = false
 
 [functions.mpesa-query]
 verify_jwt = true
+
+[functions.send-notification]
+verify_jwt = true
+
+[functions.send-rent-reminders]
+verify_jwt = false
+
+[functions.send-receipt]
+verify_jwt = true

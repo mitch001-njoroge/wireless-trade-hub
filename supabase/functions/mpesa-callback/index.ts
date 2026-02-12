@@ -154,6 +154,22 @@ Deno.serve(async (req) => {
         console.error('Failed to create payment record:', paymentError);
       } else {
         console.log('Payment record created:', payment.id);
+        
+        // Trigger receipt generation and notification
+        try {
+          const receiptUrl = `${supabaseUrl}/functions/v1/send-receipt`;
+          await fetch(receiptUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+            },
+            body: JSON.stringify({ paymentId: payment.id }),
+          });
+          console.log('Receipt notification triggered for payment:', payment.id);
+        } catch (receiptErr) {
+          console.error('Failed to trigger receipt:', receiptErr);
+        }
       }
     }
     
